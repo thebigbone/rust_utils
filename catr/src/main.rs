@@ -1,5 +1,5 @@
 fn main() {
-	let x = catr::run();
+	let x = catr::get_args().and_then(catr::run);
 	
 	if let Err(e) = x {
 		eprintln!("Some error occured!");
