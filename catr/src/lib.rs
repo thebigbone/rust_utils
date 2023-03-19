@@ -11,7 +11,7 @@ pub struct Config {
 }
  
 pub fn run(config: Config) -> MyResult<()> {
-         dbg!(config);
+         println!("{:?}",config);
          Ok(())
 }
 
