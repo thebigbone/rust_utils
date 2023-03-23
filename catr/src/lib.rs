@@ -1,5 +1,6 @@
 use std::error::Error;
 use std::fs::File;
+use std::fs;
 use std::io::{self, BufRead, BufReader};
 use clap::{App, Arg};
 
@@ -15,10 +16,32 @@ pub struct Config { // Config struct
  
 pub fn run(config: Config) -> MyResult<()> {
         for filename in config.files {
-		println!("{}",filename);	
+		match read_file(&filename) { // using the open function 
+			Err(err) => eprintln!("Failed to read {}: {}", filename, err),
+			Ok(contents)	 => println!("contents: {}", contents),	
 	} 
+}
 	Ok(())
 }
+
+fn open(filename: &str) -> MyResult<Box<dyn BufRead>> { // its a box trait for reading text, it can assign memory as needed at compile time
+	match filename { 
+		"-" => Ok(Box::new(BufReader::new(io::stdin()))), // reads from stdin if -
+ 		 _ => Ok(Box::new(BufReader::new(File::open(filename)?))), // opens file if nothing is passed
+	}
+
+	//let contents = fs::read_to_string(filename);
+	//println!("{}", contents);
+}
+
+
+fn read_file(filename: &str) -> MyResult<String> {
+    let mut file = open(filename)?;
+    let mut contents = String::new();
+    file.read_to_string(&mut contents)?;
+    Ok(contents)
+}
+
 
 
 pub fn get_args() -> MyResult<Config> { // returns Config struct if no error
